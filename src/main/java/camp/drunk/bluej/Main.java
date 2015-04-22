@@ -1,26 +1,30 @@
 package camp.drunk.bluej;
 
-import camp.drunk.bluej.http.SubredditService;
-import org.apache.commons.io.IOUtils;
+import camp.drunk.bluej.http.ListingService;
+import camp.drunk.bluej.thing.LinkListing;
+import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
-import retrofit.client.Response;
-
-import java.io.IOException;
 
 public class Main {
     public static void main(String[] args) {
         final RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("http://reddit.com")
+                .setRequestInterceptor(new RequestInterceptor() {
+                    @Override
+                    public void intercept(final RequestFacade request) {
+                        request.addHeader("User-Agent", "BlueJ-Library");
+                    }
+                })
                 .build();
 
-        final SubredditService subredditService = restAdapter.create(SubredditService.class);
-        final Response response = subredditService.get("coffee", SubredditService.Sort.HOT,
-                                                       null, null, 0, 2, null);
+        final ListingService listingService = restAdapter.create(ListingService.class);
+        final LinkListing l = listingService.forSubreddit("coffee", ListingService.Sort.HOT,
+                                                          Immutal
+                                                          null, null, 0, 2, null);
+        System.out.println(l.toString());
+        final LinkListing ll = listingService.relatedTo(l.getData().getChildren().get(0).getName
+                (), null, null, 0, 2, null);
 
-        try {
-            System.out.println(IOUtils.toString(response.getBody().in()));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        System.out.println(ll.toString());
     }
 }
