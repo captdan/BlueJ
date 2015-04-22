@@ -3,7 +3,6 @@ package camp.drunk.bluej.http;
 import camp.drunk.bluej.thing.LinkListing;
 import retrofit.http.GET;
 import retrofit.http.Path;
-import retrofit.http.Query;
 import retrofit.http.QueryMap;
 
 import java.util.Map;
@@ -17,36 +16,38 @@ public interface ListingService {
         public static final String CONTROVERSIAL = "controversial";
     }
 
-    @GET("/by_id/{names}")
+    @GET("/by_id/{names}.json")
     LinkListing byId(@Path("names") final String names);
 
-    @GET("/comments/{article}")
+    @GET("/comments/{article}.json")
     LinkListing commentsFor(@Path("article") final String article);
 
-    @GET("/duplicates/{article}")
-    LinkListing duplicateOf(@Path("article") final String article,
-                            @Query("after") final String after,
-                            @Query("before") final String before,
-                            @Query("count") final Integer count,
-                            @Query("limit") final Integer limit,
-                            @Query("show") final String show);
+    @GET("/r/{subreddit}/comments/{article}.json")
+    LinkListing commentsFor(@Path("subreddit") final String subreddit,
+                            @Path("article") final String  article);
+
+    @GET("/duplicates/{article}.json")
+    LinkListing duplicatesOf(@Path("article") final String article,
+                            @QueryMap Map<String, String> listingParams);
+
+    /**
+     *
+     * @param sort
+     * @param listingParams supports param "t" if sort is "top" or "controversial"
+     *                      "t" can be one of (hour, week, day, month, year, all)
+     *                      if sort is "random" listingParams are not supported
+     * @return
+     */
+    @GET("/{sort}.json")
+    LinkListing forAll(@Path("sort") final String sort,
+                       @QueryMap Map<String, String> listingParams);
 
     @GET("/r/{subreddit}/{sort}.json")
     LinkListing forSubreddit(@Path("subreddit") final String subreddit,
                              @Path("sort") final String sort,
-                             @QueryMap Map<String, Object> listingParams);
-                             /*
-                             @Query("after") final String after,
-                             @Query("before") final String before,
-                             @Query("count") final Integer count,
-                             @Query("limit") final Integer limit,
-                             @Query("show") final String show);*/
+                             @QueryMap Map<String, String> listingParams);
 
-    @GET("/related/{article}")
+    @GET("/related/{article}.json")
     LinkListing relatedTo(@Path("article") final String article,
-                          @Query("after") final String after,
-                          @Query("before") final String before,
-                          @Query("count") final Integer count,
-                          @Query("limit") final Integer limit,
-                          @Query("show") final String show);
+                          @QueryMap Map<String, String> listingParams);
 }
