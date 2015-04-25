@@ -29,9 +29,16 @@ public class Main {
 
         final SubredditService ss = restAdapter.create(SubredditService.class);
 
-        System.out.println(ss.about("science").toString());
+        System.out.println("about science\n\n");
+        System.out.println(ss.about("science"));
+
+        System.out.println("submittext science\n\n");
         System.out.println(ss.getSubmitText("science"));
+
+        System.out.println("recommend science\n\n");
         System.out.println(ss.recommend("science,ama", ""));
+
+        System.out.println("by topic science\n\n");
         System.out.println(ss.byTopic("food"));
     }
 }

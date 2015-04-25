@@ -15,6 +15,7 @@ public class Listing<T extends Thing> {
         String before;
         String after;
         String modhash;
+        String facets;
         List<T> children;
 
         @Override
