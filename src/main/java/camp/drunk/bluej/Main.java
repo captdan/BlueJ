@@ -1,23 +1,24 @@
 package camp.drunk.bluej;
 
 import camp.drunk.bluej.http.ListingService;
+import camp.drunk.bluej.http.SubredditService;
 import camp.drunk.bluej.thing.LinkListing;
 import com.google.common.collect.ImmutableMap;
-import retrofit.RequestInterceptor;
+import com.google.gson.GsonBuilder;
 import retrofit.RestAdapter;
+import retrofit.converter.GsonConverter;
 
 import static camp.drunk.bluej.http.ListingService.Sort.HOT;
+import static com.google.gson.FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES;
 
 public class Main {
     public static void main(String[] args) {
         final RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("http://reddit.com")
-                .setRequestInterceptor(new RequestInterceptor() {
-                    @Override
-                    public void intercept(final RequestFacade request) {
-                        request.addHeader("User-Agent", "BlueJ-Library");
-                    }
-                })
+                .setConverter(new GsonConverter(new GsonBuilder()
+                        .setFieldNamingPolicy(LOWER_CASE_WITH_UNDERSCORES)
+                        .create()))
+                .setRequestInterceptor(request -> request.addHeader("User-Agent", "BlueJ-Library"))
                 .build();
 
         final ListingService listingService = restAdapter.create(ListingService.class);
@@ -26,9 +27,11 @@ public class Main {
 
         System.out.println(l.toString());
 
-        final LinkListing ll = listingService.relatedTo(l.getData().getChildren().get(0).getName
-                (), null, null, 0, 2, null);
+        final SubredditService ss = restAdapter.create(SubredditService.class);
 
-        System.out.println(ll.toString());
+        System.out.println(ss.about("science").toString());
+        System.out.println(ss.getSubmitText("science"));
+        System.out.println(ss.recommend("science,ama", ""));
+        System.out.println(ss.byTopic("food"));
     }
 }
